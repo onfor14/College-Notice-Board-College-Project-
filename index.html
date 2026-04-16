@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>College Notice Board — Login</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="login-page">
+
+  <div class="login-card">
+    <div class="login-header">
+      <div class="logo-ring">📋</div>
+      <h1>Notice Board</h1>
+      <p class="tagline">Your college, your updates</p>
+    </div>
+
+    <form id="loginForm">
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="you@college.edu" required />
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••" required />
+      </div>
+      <p id="errorMsg" class="error-msg"></p>
+      <button type="submit" class="btn-primary">Sign In →</button>
+    </form>
+
+    <p class="hint">
+      Demo — Admin: <b>admin@college.edu / admin123</b><br/>
+      Student: <b>student@college.edu / student123</b>
+    </p>
+  </div>
+
+  <script>
+    document.getElementById('loginForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      const res = await fetch('http://localhost:5000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',    // send session cookie
+        body: JSON.stringify({ email, password })
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        // Save name and role in localStorage for display
+        localStorage.setItem('userName', data.name);
+        localStorage.setItem('userRole', data.role);
+        // Redirect based on role
+        window.location.href = data.role === 'admin' ? 'admin.html' : 'student.html';
+      } else {
+        document.getElementById('errorMsg').textContent = data.message || 'Login failed';
+      }
+    });
+  </script>
+</body>
+</html>
